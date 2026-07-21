@@ -11,7 +11,8 @@ const PORT = process.env.PORT || 3000;
 
 const HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-    'Accept-Language': 'en-US,en;q=0.9'
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Referer': 'https://gogoanime3.co/'
 };
 
 app.get('/api/anime', async (req, res) => {
@@ -21,11 +22,14 @@ app.get('/api/anime', async (req, res) => {
 
         const epNum = ep || 1;
 
+        // Search GogoAnime
         const searchUrl = `https://gogoanime3.co/search.html?keyword=${encodeURIComponent(q)}`;
         const { data: searchHtml } = await axios.get(searchUrl, { headers: HEADERS, timeout: 10000 });
         const $ = cheerio.load(searchHtml);
 
-        const firstResult = $('ul.items li').find('a').attr('href');
+        // Fixed selector targeting anime items directly
+        const firstResult = $('div.last_episodes ul.items li').first().find('p.name a').attr('href');
+        
         if (!firstResult) {
             return res.status(404).json({ error: 'Anime not found' });
         }
