@@ -11,7 +11,6 @@ const PORT = process.env.PORT || 3000;
 const animeDatabase = {
     "naruto": {
         title: "NARUTO",
-        // Stable direct MP4 video stream fallback sample for testing or full source
         episodes: {
             1: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         }
@@ -33,11 +32,9 @@ app.get('/api/anime', (req, res) => {
             return res.status(400).json({ error: 'Query parameter "q" is required' });
         }
 
-        // Find matching anime key
         let matchedKey = Object.keys(animeDatabase).find(key => q.includes(key));
         
         if (!matchedKey) {
-            // Default generic fallback if name isn't explicitly matched yet
             return res.json({
                 title: q.toUpperCase(),
                 episode: ep,
@@ -46,7 +43,7 @@ app.get('/api/anime', (req, res) => {
         }
 
         const anime = animeDatabase[matchedKey];
-        const videoUrl = anime.episodes[ep] || anime.episodes[1]; // Fallback to ep 1 if specific episode isn't mapped
+        const videoUrl = anime.episodes[ep] || anime.episodes[1];
 
         return res.json({
             title: anime.title,
@@ -61,7 +58,7 @@ app.get('/api/anime', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    send('Custom Anime API Server Active');
+    res.send('Custom Anime API Server Active'); // Fixed: changed send to res.send
 });
 
 app.listen(PORT, () => {
